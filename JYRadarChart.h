@@ -18,12 +18,13 @@
 @property (nonatomic, assign) BOOL showLegend;
 @property (nonatomic, assign) BOOL showStepText;
 @property (nonatomic, assign) CGFloat colorOpacity;
-@property (nonatomic, strong) UIColor *backgroundLineColorRadial;
+@property (nonatomic, strong) UIColor *backgroundLineColor;
 @property (nonatomic, strong) NSArray *dataSeries;
 @property (nonatomic, strong) NSArray *attributes;
 @property (nonatomic, assign) NSUInteger steps;
 @property (nonatomic, assign) CGPoint centerPoint;
 @property (nonatomic, strong) UIColor *backgroundFillColor;
+@property (nonatomic, strong) UIColor *legendTextColor;
 
 - (void)setTitles:(NSArray *)titles;
 - (void)setColors:(NSArray *)colors;

@@ -44,7 +44,7 @@
 - (void)setDefaultValues {
     self.backgroundColor = [UIColor whiteColor];
     _maxValue = 100.0;
-    _centerPoint = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2);
+    _centerPoint = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2 - PADDING/2);
     _r = MIN(self.frame.size.width / 2 - PADDING, self.frame.size.height / 2 - PADDING);
     _steps = 1;
     _drawPoints = NO;
@@ -53,7 +53,7 @@
     _fillArea = NO;
     _minValue = 0;
     _colorOpacity = 1.0;
-    _backgroundLineColorRadial = [UIColor darkGrayColor];
+    _backgroundLineColor = [UIColor lightGrayColor];
     _backgroundFillColor = [UIColor whiteColor];
 
     _legendView = [[JYLegendView alloc] init];
@@ -64,6 +64,7 @@
                         @"this", @"is", @"just", @"a", @"placeholder"];
 
     _scaleFont = [UIFont systemFontOfSize:ATTRIBUTE_TEXT_SIZE];
+    _legendTextColor = [UIColor blackColor];
 }
 
 - (void)setShowLegend:(BOOL)showLegend {
@@ -101,7 +102,7 @@
 	_dataSeries = dataSeries;
 	_numOfV = [_dataSeries[0] count];
 	if (self.legendView.colors.count < _dataSeries.count) {
-		for (int i = 0; i < _dataSeries.count; i++) {
+		for (NSInteger i = self.legendView.colors.count; i < _dataSeries.count; i++) {
 			UIColor *color = [UIColor colorWithHue:1.0 * (i * COLOR_HUE_STEP % MAX_NUM_OF_COLOR) / MAX_NUM_OF_COLOR
 			                            saturation:1
 			                            brightness:1
@@ -115,9 +116,12 @@
 	[self.legendView sizeToFit];
 	CGRect r = self.legendView.frame;
 	r.origin.x = self.frame.size.width - self.legendView.frame.size.width - LEGEND_PADDING;
-	r.origin.y = LEGEND_PADDING;
+	r.origin.y = CGRectGetHeight(self.frame) - CGRectGetHeight(self.legendView.frame) - LEGEND_PADDING;
 	self.legendView.frame = r;
 	[self bringSubviewToFront:self.legendView];
+    _centerPoint = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2 - PADDING);
+    _r = MIN(self.frame.size.width / 2 - PADDING*2, self.frame.size.height / 2 - PADDING*2);
+    [self setNeedsDisplay];
 }
 
 - (void)drawRect:(CGRect)rect {
@@ -145,7 +149,8 @@
             [paragraphStyle setAlignment:NSTextAlignmentCenter];
 
             NSDictionary *attributes = @{ NSFontAttributeName: self.scaleFont,
-                                          NSParagraphStyleAttributeName: paragraphStyle };
+                                          NSParagraphStyleAttributeName: paragraphStyle,
+                                          NSForegroundColorAttributeName: [UIColor colorWithRed:130/255.0 green:130/255.0 blue:130/255.0 alpha:1]};
 
             [attributeName drawInRect:CGRectMake(legendCenter.x - width / 2.0,
                                                  legendCenter.y - height / 2.0,
@@ -176,7 +181,7 @@
 	//draw steps line
 	//static CGFloat dashedPattern[] = {3,3};
 	//TODO: make this color a variable
-	[[UIColor lightGrayColor] setStroke];
+	[_backgroundLineColor setStroke];
 	CGContextSaveGState(context);
 	for (int step = 1; step <= _steps; step++) {
 		for (int i = 0; i <= _numOfV; ++i) {
@@ -194,7 +199,8 @@
 	CGContextRestoreGState(context);
     
 	//draw lines from center
-	[_backgroundLineColorRadial setStroke];
+	//TODO: make this color a variable
+	[[UIColor lightGrayColor] setStroke];
 	for (int i = 0; i < _numOfV; i++) {
 		CGContextMoveToPoint(context, _centerPoint.x, _centerPoint.y);
 		CGContextAddLineToPoint(context, _centerPoint.x - _r * sin(i * radPerV),
@@ -204,7 +210,7 @@
 	//end of base except axis label
     
     
-	CGContextSetLineWidth(context, 2.0);
+	CGContextSetLineWidth(context, 1.5);
     
 	//draw lines
 	for (int serie = 0; serie < [_dataSeries count]; serie++) {

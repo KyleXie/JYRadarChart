@@ -56,11 +56,13 @@ void CGContextFillRoundedRect(CGContextRef c, CGRect rect, CGFloat radius) {
 
 - (void)setDefaultValues {
     _legendFont = [UIFont systemFontOfSize:FONT_SIZE];
+    _textColor = [UIColor colorWithRed:130/255.0 green:130/255.0 blue:130/255.0 alpha:1];
+    _fillColor = [UIColor clearColor];
 }
 
 - (void)drawRect:(CGRect)rect {
 	CGContextRef c = UIGraphicsGetCurrentContext();
-	CGContextSetFillColorWithColor(c, [[UIColor colorWithWhite:0.0 alpha:0.1] CGColor]);
+	CGContextSetFillColorWithColor(c, [self.fillColor CGColor]);
 	CGContextFillRoundedRect(c, self.bounds, LEGEND_ROUND_RADIUS);
 
 	CGFloat y = 0;
@@ -69,12 +71,12 @@ void CGContextFillRoundedRect(CGContextRef c, CGRect rect, CGFloat radius) {
 		UIColor *color = self.colors[i];
 		if (color) {
 			[color setFill];
-			CGContextFillEllipseInRect(c, CGRectMake(PADDING + 2,
+			CGContextFillRect(c, CGRectMake(PADDING + 2,
 			                                         PADDING + round(y) + self.legendFont.xHeight / 2 + 1,
 			                                         CIRCLE_DIAMETER, CIRCLE_DIAMETER));
 		}
-		[[UIColor blackColor] set];
-		JY_DRAW_TEXT_AT_POINT(title, CGPointMake(COLOR_PADDING + PADDING, y + PADDING), self.legendFont);
+		[self.textColor set];
+		JY_DRAW_TEXT_AT_POINT(title, CGPointMake(COLOR_PADDING + PADDING, y + PADDING), self.legendFont, self.textColor);
 		y += [self.legendFont lineHeight];
 	}
 }
